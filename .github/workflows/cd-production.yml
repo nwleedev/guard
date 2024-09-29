@@ -30,4 +30,4 @@ jobs:
 
       - uses: simenandre/publish-with-pnpm@v2
         with:
-          token: ${{ secrets.NPM_TOKEN }}
+          npm-auth-token: ${{ secrets.NPM_TOKEN }}
