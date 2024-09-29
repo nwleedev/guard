@@ -1,50 +1,93 @@
-# React + TypeScript + Vite
+# Guard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React Guard Components to cut down ternary operators.
 
-Currently, two official plugins are available:
+## NullGuard
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Render children components when data is not nullable.
 
-## Expanding the ESLint configuration
+`Default`
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+```tsx
+function App() {
+  const { data, isFetching } = useApi();
 
-- Configure the top-level `parserOptions` property like this:
+  return (
+    <NullGuard data={data}>
+      {function (data) {
+        // ... Children components
+      }}
+    </NullGuard>
+  );
+}
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+export default App;
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+`Fallback`
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+- Render fallback components when data is nullable.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```tsx
+function Fallback() {
+  return <p>Loading...</p>;
+}
+function App() {
+  const { data, isFetching } = useApi();
+
+  return (
+    <NullGuard data={data} fallback={<Fallback />}>
+      {function (data) {
+        // ... Children components
+      }}
+    </NullGuard>
+  );
+}
+
+export default App;
+```
+
+## WhenGuard
+
+`Default`
+
+Render children components when props is true.
+
+```tsx
+function App() {
+  const { data, isFetching } = useApi();
+
+  return (
+    <WhenGuard when={!isFetching}>
+      {function () {
+        // ... Children components when `isFetching` is false.
+      }}
+    </WhenGuard>
+  );
+}
+
+export default App;
+```
+
+`Fallback`
+
+- Render fallback components when when is false.
+
+```tsx
+function Fallback() {
+  return <p>Not Ready</p>;
+}
+function App() {
+  const { data, isFetching } = useApi();
+
+  return (
+    <WhenGuard when={!isFetching} fallback={<Fallback />}>
+      {function () {
+        // ... Children components when `isFetching` is false.
+      }}
+    </WhenGuard>
+  );
+}
+
+export default App;
 ```
